@@ -1,0 +1,88 @@
+/*
+ * =================================================================================================
+ * AMÉLIORATIONS APPORTÉES À index.css
+ * =================================================================================================
+ *
+ * 1.  TYPOGRAPHIE MODERNE :
+ * - Ajout de la police "Poppins" depuis Google Fonts. C'est une police sans-serif moderne,
+ * très lisible et populaire, parfaite pour donner un look professionnel à votre plateforme.
+ * - Application de l'anticrénelage (`antialiased`) pour un rendu de texte plus doux.
+ *
+ * 2.  HIÉRARCHIE VISUELLE POUR LES TITRES :
+ * - Définition de styles de base pour les balises de titre (h1, h2, h3, etc.) dans `@layer base`.
+ * - Cela garantit une cohérence visuelle sur tout le site, améliore la lisibilité et le SEO.
+ * - Chaque titre a une taille et une graisse distincte pour une hiérarchie claire sans avoir
+ * à répéter les classes Tailwind partout.
+ *
+ * 3.  COHÉRENCE GLOBALE ET EXPÉRIENCE UTILISATEUR :
+ * - Ajout du `scroll-behavior: smooth;` pour une navigation plus fluide lors des clics sur les ancres.
+ * - Le `body` est configuré pour prendre au minimum toute la hauteur de l'écran (`min-h-screen`),
+ * ce qui aide à bien positionner le footer même sur les pages avec peu de contenu.
+ * - Suppression de la règle `* { @apply border-border; }` qui était trop agressive. Il est préférable
+ * d'appliquer les bordures uniquement aux éléments qui en ont besoin spécifiquement.
+ *
+ * 4.  CONTAINER PERSONNALISÉ :
+ * - Ajout d'une classe `.container` dans la couche `@layer components`. C'est une pratique
+ * très courante et recommandée pour centrer le contenu principal et limiter sa largeur,
+ * assurant une mise en page harmonieuse sur les grands écrans.
+ *
+ * =================================================================================================
+ */
+
+/* 1. Import de la police depuis Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  html {
+    /* 2. Ajoute un défilement fluide lors de la navigation avec des ancres (#) */
+    @apply scroll-smooth;
+  }
+
+  body {
+    /* Applique la couleur de fond et de texte de base (défini dans tailwind.config.js) */
+    @apply bg-background text-foreground;
+    /* Applique la police Poppins importée, avec une police système en fallback */
+    font-family: 'Poppins', sans-serif;
+    /* Améliore le rendu des polices pour un aspect plus net et professionnel */
+    @apply antialiased;
+    /* Assure que le body prend au moins toute la hauteur de la vue */
+    @apply min-h-screen flex flex-col;
+  }
+
+  /* 3. Définition d'une hiérarchie de texte claire et cohérente */
+  h1 {
+    @apply text-4xl font-bold tracking-tight lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-2xl font-bold tracking-tight;
+  }
+
+  h4 {
+    @apply text-xl font-semibold tracking-tight;
+  }
+  
+  /* Style de base pour les paragraphes pour une meilleure lisibilité */
+  p {
+    @apply leading-relaxed text-muted-foreground;
+  }
+}
+
+@layer components {
+  /*
+    4. Classe utilitaire pour centrer le contenu et définir une largeur maximale.
+    Utilisation : <div class="container">...</div>
+  */
+  .container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}

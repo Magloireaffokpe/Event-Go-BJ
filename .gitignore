@@ -1,0 +1,48 @@
+# -----------------------------
+# Python / Django
+# -----------------------------
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+*.log
+media/
+staticfiles/
+.env
+
+# -----------------------------
+# Node / React
+# -----------------------------
+node_modules/
+build/
+dist/
+.env
+
+# -----------------------------
+# IDE / OS
+# -----------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# -----------------------------
+# Logs / temporary files
+# -----------------------------
+*.swp
+*.tmp
+*.bak
+
+# -----------------------------
+# Coverage / testing
+# -----------------------------
+htmlcov/
+.coverage
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+*.log

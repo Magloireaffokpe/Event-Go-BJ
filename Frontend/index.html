@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>EventGo BJ - Plateforme d'événements au Bénin</title>
+    <meta name="title" content="EventGo BJ - Plateforme d'événements au Bénin">
+    <meta name="description" content="Découvrez et participez aux meilleurs événements au Bénin avec EventGo BJ. Concerts, conférences, spectacles et plus encore !">
+    <meta name="keywords" content="événements, Bénin, concerts, conférences, spectacles, billetterie, Cotonou, Porto-Novo">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="French">
+    <meta name="author" content="EventGo BJ Team">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://eventgo.bj/">
+    <meta property="og:title" content="EventGo BJ - Plateforme d'événements au Bénin">
+    <meta property="og:description" content="Découvrez et participez aux meilleurs événements au Bénin avec EventGo BJ">
+    <meta property="og:image" content="/og-image.jpg">
+    <meta property="og:site_name" content="EventGo BJ">
+    <meta property="og:locale" content="fr_FR">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://eventgo.bj/">
+    <meta property="twitter:title" content="EventGo BJ - Plateforme d'événements au Bénin">
+    <meta property="twitter:description" content="Découvrez et participez aux meilleurs événements au Bénin avec EventGo BJ">
+    <meta property="twitter:image" content="/twitter-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#2563eb">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="theme-color" content="#2563eb">
+
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Performance optimizations -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="EventGo BJ">
+
+    <!-- Security -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    
+    <!-- PWA Support -->
+    <meta name="application-name" content="EventGo BJ">
+    <meta name="msapplication-tooltip" content="EventGo BJ - Événements au Bénin">
+    <meta name="msapplication-starturl" content="/">
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "EventGo BJ",
+      "description": "Plateforme de découverte et de gestion d'événements au Bénin",
+      "url": "https://eventgo.bj",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://eventgo.bj/events?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Loading styles -->
+    <style>
+      /* Critical CSS for loading state */
+      #root {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .loading-spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f4f6;
+        border-radius: 50%;
+        border-top-color: #2563eb;
+        animation: spin 1s ease-in-out infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      .loading-text {
+        margin-top: 16px;
+        color: #6b7280;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      
+      /* Hide loading once React takes over */
+      .react-loaded .initial-loading {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: system-ui, sans-serif;">
+        <h1>JavaScript requis</h1>
+        <p>EventGo BJ nécessite JavaScript pour fonctionner. Veuillez l'activer dans votre navigateur.</p>
+      </div>
+    </noscript>
+    
+    <div id="root">
+      <!-- Loading state while React loads -->
+      <div class="initial-loading" style="text-align: center;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Chargement d'EventGo BJ...</div>
+      </div>
+    </div>
+    
+    <!-- Main app script -->
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Add loaded class when React takes over -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          document.body.classList.add('react-loaded');
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
