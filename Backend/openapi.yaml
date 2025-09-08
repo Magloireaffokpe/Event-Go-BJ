@@ -1,0 +1,639 @@
+openapi: 3.0.3
+info:
+  title: EventGo BJ API
+  version: 1.0.0
+  description: API complète pour la gestion d'événements avec billetterie et paiements
+  contact:
+    name: EventGo BJ Team
+    email: support@eventgo.bj
+
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [participant, organizer, admin]
+        is_active:
+          type: boolean
+        date_joined:
+          type: string
+          format: date-time
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        start_datetime:
+          type: string
+          format: date-time
+        end_datetime:
+          type: string
+          format: date-time
+        location:
+          type: string
+        category:
+          type: string
+          enum: [music, sports, conference, art, theater, other]
+        max_attendees:
+          type: integer
+        organizer:
+          $ref: '#/components/schemas/User'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: decimal
+        quantity_available:
+          type: integer
+        quantity_sold:
+          type: integer
+        event:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    Purchase:
+      type: object
+      properties:
+        id:
+          type: integer
+        ticket:
+          $ref: '#/components/schemas/Ticket'
+        user:
+          $ref: '#/components/schemas/User'
+        quantity:
+          type: integer
+        total_amount:
+          type: number
+          format: decimal
+        qr_code:
+          type: string
+        status:
+          type: string
+          enum: [pending, paid, cancelled]
+        created_at:
+          type: string
+          format: date-time
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - first_name
+        - last_name
+        - phone
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [participant, organizer]
+          default: participant
+
+    TokenResponse:
+      type: object
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    PaymentRequest:
+      type: object
+      required:
+        - amount
+        - method
+      properties:
+        amount:
+          type: number
+          format: decimal
+        method:
+          type: string
+          enum: [mobile_money, card]
+        phone:
+          type: string
+          description: Required for mobile money
+        card_number:
+          type: string
+          description: Required for card payment
+        card_expiry:
+          type: string
+          description: Required for card payment
+        card_cvv:
+          type: string
+          description: Required for card payment
+
+paths:
+  /auth/register/:
+    post:
+      tags:
+        - Authentication
+      summary: Inscription utilisateur
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Données invalides
+
+  /auth/login/:
+    post:
+      tags:
+        - Authentication
+      summary: Connexion utilisateur
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Identifiants invalides
+
+  /auth/refresh/:
+    post:
+      tags:
+        - Authentication
+      summary: Actualiser le token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+      responses:
+        '200':
+          description: Token actualisé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+
+  /users/me/:
+    get:
+      tags:
+        - Users
+      summary: Obtenir le profil utilisateur
+      responses:
+        '200':
+          description: Profil utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    patch:
+      tags:
+        - Users
+      summary: Mettre à jour le profil
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: Profil mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /events/:
+    get:
+      tags:
+        - Events
+      summary: Liste des événements
+      security: []
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Liste des événements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+
+    post:
+      tags:
+        - Events
+      summary: Créer un événement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - start_datetime
+                - end_datetime
+                - location
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                start_datetime:
+                  type: string
+                  format: date-time
+                end_datetime:
+                  type: string
+                  format: date-time
+                location:
+                  type: string
+                category:
+                  type: string
+                max_attendees:
+                  type: integer
+      responses:
+        '201':
+          description: Événement créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+  /events/{id}/:
+    get:
+      tags:
+        - Events
+      summary: Détail d'un événement
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détail de l'événement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+    patch:
+      tags:
+        - Events
+      summary: Modifier un événement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                start_datetime:
+                  type: string
+                  format: date-time
+                end_datetime:
+                  type: string
+                  format: date-time
+                location:
+                  type: string
+                category:
+                  type: string
+                max_attendees:
+                  type: integer
+      responses:
+        '200':
+          description: Événement modifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+    delete:
+      tags:
+        - Events
+      summary: Supprimer un événement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Événement supprimé
+
+  /events/{id}/tickets/:
+    get:
+      tags:
+        - Tickets
+      summary: Liste des billets pour un événement
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des billets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+
+    post:
+      tags:
+        - Tickets
+      summary: Créer un type de billet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - price
+                - quantity_available
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                  format: decimal
+                quantity_available:
+                  type: integer
+      responses:
+        '201':
+          description: Billet créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+
+  /tickets/{id}/purchase/:
+    post:
+      tags:
+        - Tickets
+      summary: Acheter un billet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+                - payment_method
+              properties:
+                quantity:
+                  type: integer
+                payment_method:
+                  type: string
+                  enum: [mobile_money, card]
+                phone:
+                  type: string
+                card_number:
+                  type: string
+                card_expiry:
+                  type: string
+                card_cvv:
+                  type: string
+      responses:
+        '201':
+          description: Achat réussi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Purchase'
+
+  /tickets/{id}/:
+    get:
+      tags:
+        - Tickets
+      summary: Détail d'un billet acheté
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détail du billet avec QR code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Purchase'
+
+  /dashboard/organizer/:
+    get:
+      tags:
+        - Dashboard
+      summary: Statistiques organisateur
+      responses:
+        '200':
+          description: Statistiques organisateur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_events:
+                    type: integer
+                  total_sales:
+                    type: number
+                    format: decimal
+                  total_attendees:
+                    type: integer
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        event:
+                          $ref: '#/components/schemas/Event'
+                        sales:
+                          type: number
+                          format: decimal
+                        attendees:
+                          type: integer
+
+  /dashboard/admin/:
+    get:
+      tags:
+        - Dashboard
+      summary: Statistiques admin
+      responses:
+        '200':
+          description: Statistiques globales
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_users:
+                    type: integer
+                  total_events:
+                    type: integer
+                  total_sales:
+                    type: number
+                    format: decimal
+                  total_revenue:
+                    type: number
+                    format: decimal
+                  monthly_stats:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        month:
+                          type: string
+                        events:
+                          type: integer
+                        sales:
+                          type: number
+                          format: decimal

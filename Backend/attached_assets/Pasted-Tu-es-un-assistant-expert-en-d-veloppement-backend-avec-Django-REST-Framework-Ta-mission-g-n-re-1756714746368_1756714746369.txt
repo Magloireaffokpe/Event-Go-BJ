@@ -1,0 +1,124 @@
+Tu es un assistant expert en développement backend avec Django REST Framework.  
+Ta mission : générer un **projet backend complet Django REST + PostgreSQL**, basé sur le cahier des charges suivant :  
+
+Nom du projet : EventGo BJ  
+Technologies backend : Django REST Framework  
+Base de données : PostgreSQL  
+Authentification : JWT (via djangorestframework-simplejwt)  
+QR Codes : utilisation de la librairie `qrcode` pour billets  
+Paiements : implémenter des endpoints mockés pour Mobile Money / Carte bancaire (juste structure, pas vrai paiement).  
+
+---
+
+. **Fonctionnalités à implémenter :**
+   - Authentification : inscription, login, récupération mot de passe, rôle utilisateur
+   - Gestion des événements : création, modification, suppression, consultation
+   - Gestion des billets : types de billets, quotas, achats, QR code
+   - Tableau de bord organisateur et admin : stats, ventes, participants
+   - Paiements (simulation) : Mobile Money, carte bancaire
+   - Notifications (simulation) : email ou push
+   - Gestion des utilisateurs et modération pour admin
+
+### 📑 Plan des API :
+
+Authentification & Utilisateurs
+    • POST /api/auth/register/ → créer compte (nom, email, mot de passe, téléphone).
+    • POST /api/auth/login/ → login (email + password).
+    • POST /api/auth/logout/ → logout.
+    • POST /api/auth/refresh/ → refresh token.
+    • GET /api/users/me/ → profil connecté.
+    • PATCH /api/users/me/ → mise à jour profil.
+Événements
+    • GET /api/events/ → liste des événements (recherche, filtre par date, lieu, catégorie).
+    • POST /api/events/ → créer événement (organisateur).
+    • GET /api/events/{id}/ → détail événement.
+    • PATCH /api/events/{id}/ → mise à jour.
+    • DELETE /api/events/{id}/ → suppression.
+Billets
+    • POST /api/events/{id}/tickets/ → création billet (organisateur).
+    • GET /api/events/{id}/tickets/ → liste billets dispo.
+    • POST /api/tickets/{id}/purchase/ → achat billet (participant).
+    • GET /api/tickets/{id}/ → détail billet (QR code inclus).
+Dashboards
+    • GET /api/dashboard/organizer/ → stats organisateur (ventes, revenus, inscriptions).
+    • GET /api/dashboard/admin/ → stats globales (ventes, utilisateurs, revenus).
+Fournis **un fichier `openapi.yaml` complet** décrivant toutes les API
+
+### ⚙️ Exigences techniques :
+- Structure Django REST propre avec `apps/` séparés (users, events, tickets, dashboards).  
+- Utilisation de PostgreSQL avec migrations.  
+- Serializers, ViewSets, Routers (DRF best practices).  
+- Authentification JWT (login/logout/refresh).  
+- Middleware sécurité (CORS, CSRF désactivé pour API, HTTPS ready).  
+
+### 🎁 Livrables attendus :
+- Dossier complet Django REST téléchargeable, avec :  
+  - Fichiers du projet Django (`manage.py`, `settings.py`, apps, etc.)  
+- Fichier `requirements.txt`
+- `openapi.yaml` décrivant toutes les API
+  - Fichier `.env.example` (DB, SECRET_KEY, JWT config)  
+  - Migrations incluses (`python manage.py makemigrations && migrate`)  
+  - Fichier `README.md` expliquant installation et lancement :  
+    - `pip install -r requirements.txt`  
+    - `python manage.py migrate`  
+- `python manage.py runserver`
+   - Le projet doit être téléchargeable et prêt à exécuter
+   - Structure claire des dossiers et fichiers
+   - Code commenté et lisible
+
+**Contraintes :**
+- Backend doit pouvoir fonctionner **indépendamment** du frontend
+- Chaque modèle de base de données doit correspondre au cahier des charges EventGo BJ (événements, billets, utilisateurs, rôles, stats)
+- Générer des données de test minimales pour chaque modèle
+Squelettes
+backend-eventgo/
+│
+├─ manage.py
+├─ requirements.txt
+├─ .env.example               # Variables d'environnement pour DB et JWT
+├─ README.md                  # Instructions d'installation, migration et lancement
+├─ openapi.yaml               # Décrit toutes les API pour le frontend
+│
+├─ eventgo/                   # Configuration Django
+│   ├─ __init__.py
+│   ├─ settings.py
+│   ├─ urls.py
+│   ├─ wsgi.py
+│   └─ asgi.py
+│
+├─ apps/
+│   ├─ users/                 # Gestion utilisateurs, rôles et auth
+│   │   ├─ models.py
+│   │   ├─ serializers.py
+│   │   ├─ views.py
+│   │   ├─ urls.py
+│   │   └─ tests.py
+│   │
+│   ├─ events/                # Gestion des événements
+│   │   ├─ models.py
+│   │   ├─ serializers.py
+│   │   ├─ views.py
+│   │   ├─ urls.py
+│   │   └─ tests.py
+│   │
+│   ├─ tickets/               # Billets et QR codes
+│   │   ├─ models.py
+│   │   ├─ serializers.py
+│   │   ├─ views.py
+│   │   ├─ urls.py
+│   │   └─ tests.py
+│   │
+│   ├─ payments/              # Simulation paiements
+│   │   ├─ models.py
+│   │   ├─ serializers.py
+│   │   ├─ views.py
+│   │   └─ urls.py
+│   │
+│   └─ notifications/         # Notifications email/push
+│       ├─ models.py
+│       ├─ serializers.py
+│       ├─ views.py
+│       └─ urls.py
+│
+└─ migrations/                # Les migrations générées
+⚠️ Rappel : Ton travail = **backend uniquement**. Le frontend sera fait séparément.  
